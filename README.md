@@ -39,6 +39,15 @@ fetches the Ymir distro and runs its installer, which provisions, self-heals and
 > **Alpha** — the forge is hot and the anvil works, but expect rough edges, and do
 > not expose it as a public service yet.
 
+
+---
+
+> **Who can install this today.** The Ymir distro is **private** while it is young —
+> so `curl`, `npx` and `git clone` work for **the author and invited users**, not for
+> the public (an unknown clone returns 404). If you would like access, ask:
+> [zerwiz.org](https://zerwiz.org). When the distro opens, this note goes away and
+> the four commands above become open to everyone.
+
 ---
 
 # YMIR — The Single-Tenant Agent Operating System

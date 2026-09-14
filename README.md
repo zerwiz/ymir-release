@@ -595,17 +595,17 @@ follow them, star them, learn from them.
 
 | Project | Who made it | Licence | What it powers in Ymir |
 |---|---|---|---|
-| [treehouse](https://github.com/kunchenguid/treehouse) | kunchenguid | MIT | Yggdrasil — git worktrees |
+| [treehouse](https://github.com/kunchenguid/treehouse) | [kunchenguid](https://www.youtube.com/@kunchenguid) | MIT | Yggdrasil — git worktrees |
 | [sandcastle](https://github.com/mattpocock/sandcastle) | [Matt Pocock](https://www.youtube.com/@mattpocockuk) | MIT | Utgard — sealed sandboxes |
-| [no-mistakes](https://github.com/kunchenguid/no-mistakes) | kunchenguid | MIT | the clean-PR gate |
+| [no-mistakes](https://github.com/kunchenguid/no-mistakes) | [kunchenguid](https://www.youtube.com/@kunchenguid) | MIT | the clean-PR gate |
 | [pi](https://github.com/earendil-works/pi) | Earendil Works | MIT | the coding harness |
 | [oh-my-pi](https://github.com/can1357/oh-my-pi) | can1357 | MIT | prior art for the pi surface |
 | [hermes-agent](https://github.com/NousResearch/hermes-agent) | Nous Research | MIT | the Hermes worker runtime |
 | [pi-desktop](https://github.com/FaqFirebase/pi-desktop) | FaqFirebase and the Pi Desktop contributors | Apache-2.0 | Sessrúmnir (our re-themed fork) |
 | [A2A protocol](https://github.com/a2aproject/a2a) | the A2A project | Apache-2.0 | the agent-to-agent backbone |
-| [firstmate](https://github.com/kunchenguid/firstmate) | kunchenguid | MIT | the fleet |
-| [axi](https://github.com/kunchenguid/axi) | kunchenguid | MIT | agent-ergonomics principles |
-| [lavish-axi](https://github.com/kunchenguid/lavish-axi) | kunchenguid | MIT | the HTML-artifact editor |
+| [firstmate](https://github.com/kunchenguid/firstmate) | [kunchenguid](https://www.youtube.com/@kunchenguid) | MIT | the fleet |
+| [axi](https://github.com/kunchenguid/axi) | [kunchenguid](https://www.youtube.com/@kunchenguid) | MIT | agent-ergonomics principles |
+| [lavish-axi](https://github.com/kunchenguid/lavish-axi) | [kunchenguid](https://www.youtube.com/@kunchenguid) | MIT | the HTML-artifact editor |
 
 Their full licence texts are bundled in [THIRD-PARTY-LICENSES](THIRD-PARTY-LICENSES),
 and the audit of every demand is in [docs/third-party-audit.md](docs/third-party-audit.md).
@@ -617,3 +617,12 @@ Thank you all. The forge is hot because you lit it.
 _Where a maker teaches on YouTube we link the channel — Matt Pocock's is
 [youtube.com/@mattpocockuk](https://www.youtube.com/@mattpocockuk). If you make a
 tutorial for a project we use, tell us and we will link yours too._
+
+### Also worth your time
+
+Not ours, not dependencies — just people whose teaching we have learned from, and
+who we think are worth watching:
+
+- **[Indy Dev Dan](https://www.youtube.com/@indydevdan)** — agent engineering, taught plainly.
+- **[kunchenguid](https://www.youtube.com/@kunchenguid)** — the maker of treehouse, no-mistakes and firstmate.
+- **[Matt Pocock](https://www.youtube.com/@mattpocockuk)** — AI coding for real engineers.

@@ -14,12 +14,23 @@
 > One command stands it up on your own machine. No hosting, no accounts.
 
 ```bash
-# curl
+# 1 · curl — fetch the bootstrap and run it
 curl -fsSL https://raw.githubusercontent.com/zerwiz/ymir-release/main/install.sh | bash
 
-# npm
-npx @zerwiz/ymir            # add --check to see the plan, --yes to run unattended
+# 2 · npx — no install, run once
+npx @zerwiz/ymir                 # add --check (report only) or --yes (unattended)
+
+# 3 · npm global — install the command, then run it
+npm i -g @zerwiz/ymir
+ymir
+
+# 4 · clone the distro and run its installer directly
+git clone https://github.com/zerwiz/ymir.git ~/.ymir
+bash ~/.ymir/bin/ymir-install.sh
 ```
+
+> All four run the **same installer**. It is idempotent — run it again and it heals
+> forward. `--check` shows the plan without writing anything.
 
 This npm package is only the **bootstrap** (install.sh + a thin `ymir` bin): it
 fetches the Ymir distro and runs its installer, which provisions, self-heals and

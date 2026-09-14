@@ -1,5 +1,15 @@
 # @zerwiz/ymir
 
+
+---
+
+<p align="center">
+  <strong>created by zerwiz</strong> · <a href="https://zerwiz.org">https://zerwiz.org</a> · whynotproductions<br>
+  <em>a hobby project, made for the love of the craft. use it, fork it, enjoy it.</em>
+</p>
+
+---
+
 > **The front door to Ymir** — a single-operator, self-hosted, multi-agent AI runtime.
 > One command stands it up on your own machine. No hosting, no accounts.
 

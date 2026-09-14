@@ -40,6 +40,11 @@ fetches the Ymir distro and runs its installer, which provisions, self-heals and
 > not expose it as a public service yet.
 
 
+
+> **Platform: Linux only, for now.** Ymir is built and tested on **Linux** (Omarchy /
+> Arch first). macOS and Windows (WSL2) are planned but **not** ready — the installer
+> will report honestly rather than pretend. Do not expect a working install elsewhere yet.
+
 ---
 
 > **Who can install this today.** The Ymir distro is **private** while it is young —

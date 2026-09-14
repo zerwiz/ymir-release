@@ -9,6 +9,12 @@ How a Ymir release is cut. Follow it in order — every step is a gate.
   must say this plainly, and the release note must repeat it.
 - The **public** surface is `zerwiz/ymir-release` (the bootstrap + npm package).
 
+## Platform
+
+**Linux only for now.** Releases are cut and verified on Linux (Omarchy-first). macOS
+and Windows (WSL2) layers are planned; until they exist, a release must not claim
+them — the installer reports their absence honestly.
+
 ## Before a release
 
 ```

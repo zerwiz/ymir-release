@@ -561,6 +561,17 @@ the full day's ledger.
 
 ---
 
+---
+
+## Contributing
+
+Ymir is a hobby project, and contributions are genuinely welcome — a bug report, a
+docs fix, a new skill, a whole adapter. **Please fork, branch, and open a Pull
+Request**: `main` is protected, so nothing lands without review. See
+[CONTRIBUTING.md](CONTRIBUTING.md) for the whole of it.
+
+*Be kind, keep it small, and name your subsystem true.*
+
 ## With gratitude — the people we stand on
 
 Ymir is a Norse shell over other people's excellent work. We did not build the

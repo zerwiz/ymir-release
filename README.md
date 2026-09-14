@@ -1,87 +1,573 @@
 # @zerwiz/ymir
 
-> **The front door to Ymir** — a local, self-hosted, multi-agent AI runtime.
-> One command to stand it up on your own machine.
+> **The front door to Ymir** — a single-operator, self-hosted, multi-agent AI runtime.
+> One command stands it up on your own machine. No hosting, no accounts.
 
 ```bash
 # curl
 curl -fsSL https://raw.githubusercontent.com/zerwiz/ymir-release/main/install.sh | bash
 
 # npm
-npx @zerwiz/ymir
+npx @zerwiz/ymir            # add --check to see the plan, --yes to run unattended
 ```
 
-Both do the same thing: fetch the Ymir distro, then run its installer — which
-provisions, self-heals, and **validates** what it claims is running.
+This npm package is only the **bootstrap** (install.sh + a thin `ymir` bin): it
+fetches the Ymir distro and runs its installer, which provisions, self-heals and
+**validates** what it claims is running. It carries no secrets.
+
+> **Alpha** — the forge is hot and the anvil works, but expect rough edges, and do
+> not expose it as a public service yet.
 
 ---
 
-## What is Ymir?
+# YMIR — The Single-Tenant Agent Operating System
 
-A **brutal multi-agent AI runtime** where autonomous smiths forge code inside
-sealed sandboxes and persistent vector-memory wells. It is one program, carved
-into realms: a fleet of named agents, isolated git worktrees, an append-only
-audit ledger, and an anti-hallucination gate — all on hardware you own.
+> **One operator. One repo. A whole business, run by a Norse-named agent fleet.**
 
-Norse myth is **structural allegory**, not decoration. Every name explains a job:
+![Ymir — the single-tenant agent OS](assets/ymir-banner-03.png)
 
-| Name | What it is |
+Ymir is a lean, single-operator agentic OS. You are the **Allfather**; **Brokk** is
+your primary agent; **Eindri** are the isolated workers it dispatches. Everything —
+development, marketing, business strategy, life — runs from one repository, with an
+audit ledger, a memory well, one tenant and its workspaces, and a control plane you actually look at.
+
+---
+
+## The Allfather's Chain
+
+The Allfather holds the only chain. If the Allfather does not draw it, Ymir walks
+the machine as the Allfather walks it — no gate between the agent and the tools,
+no second master but the Allfather's own hand.
+
+---
+
+## The Lore (short version)
+
+Ymir is not a theme — the myths are **load-bearing allegory**. Every subsystem is
+named for the figure whose role matches the machine's job:
+
+The platform is the primordial giant **Ymir**, from whose body the worlds were
+carved. The smiths are **Brokk** (the bellows-smith, your primary agent) and
+**Eindri** (the workers who out-forged the gods). Memory is **Mimirsbrunn**, the
+well at the root of **Yggdrasil**, and **Kaia** is the oracle who speaks from it.
+Every significant action is carved into **Runes**, an append-only ledger. Work
+passes the **seven gates** and is built on **borrowed anvils** — validated open
+source first, always. The full tale: [`docs/lore.md`](docs/lore.md).
+
+| Component | Role |
 |---|---|
-| **Ymir** | the substrate — one program, one machine, all realms carved from it |
-| **Brokk** | the primary agent — the bellows that drives the forge |
-| **Eindri** | isolated worker agents — smiths in sealed sandboxes |
-| **Utgard** | the sandbox — untrusted code runs there, never in the halls |
-| **Yggdrasil** | git worktrees — parallel branches, zero collision |
-| **Mimirsbrunn** | the memory well — vector + full-text + local embeddings |
-| **Ratatoskr** | the message bus — the agent-to-agent backbone (A2A 1.0) |
-| **Runes** | the append-only audit ledger — a rune once carved is never un-carved |
-| **Hlidskjalf** | the control plane — the high seat that sees every realm |
-| **Sessrúmnir** | the seat-hall — where you converse with the fleet |
+| **Ymir** | the platform / host daemon |
+| **Brokk** | the primary autonomous agent |
+| **Eindri** | isolated workers — Sindri, Bragi, Huginn, Mímir, Forseti, Snotra, Kvasir |
+| **Mimirsbrunn** | the memory well (engram) + Kaia's bridge |
+| **Yggdrasil** | git worktrees — zero-collision parallelism |
+| **Utgard** | ephemeral Docker sandboxes — the execution barrier |
+| **Runes** | the append-only audit ledger |
+| **Hlidskjalf** | the control plane / observability |
 
-## Install
+---
+
+## What it is
+
+- **A distro, not an app.** Launch a supported harness in the repo and you take the
+  high seat: context is injected before your first turn, the model bridge is raised,
+  the scheduled jobs start.
+- **Isolation by default.** Complex work runs in **Yggdrasil** worktrees sealed by
+  **Utgard** sandboxes; a failed run never touches main.
+- **Audit everything.** **Runes** is an append-only, checksum-chained ledger.
+- **Memory that grounds.** **Mimirsbrunn** (engram) is drunk from before dispatch and
+  watered after; a dry well never blocks.
+- **Humans in the loop.** **Mjollnir** opens PRs; nothing force-merges.
+- **Open source first.** Ymir owns only three things — the UI, the runtime, and
+  A2A collaboration. Everything else wears a Norse name over a validated engine.
+
+---
+
+## Host platforms — three first-class identities
+
+Ymir is not portable-in-theory; it is **native** to the machine it runs on. Three
+platforms are first-class, and each one is detected, used, and learned rather than
+merely tolerated.
+
+| Identity | What it means | Where it lives |
+|---|---|---|
+| **Omarchy-native** | The host desktop is Omarchy (Arch + Hyprland). Ymir reads monitors/scale, lets Hyprland own window placement, mitigates the amdgpu GPU crash, and **learns the user's setup** — packages, configs, Omarchy version — re-learning after every `omarchy update` via a `post-update` hook. | `bin/omarchy-sense.sh`, `bin/omarchy-hook-install.sh`, skill `ymir` |
+| **herdr-first (Þjazi)** | Agent panes need a terminal backend. **herdr** is preferred (Þjazi protocol **14+**; presentation spaces at **0.8.0+**), **tmux** is the accepted reference backend. A missing backend is reported, never silently degraded. | `bin/herdr-ensure.sh`, skill `ymir` |
+| **pi-native** | The [pi](https://pi.dev) coding harness is a first-class surface: extensions, skills, prompt templates, themes, custom providers, and **pi packages** (npm/git) are all live. This is where Ymir gains reach — a new capability can be a pi extension or a packaged bundle, not just a shell script. | `.pi/extensions/`, `.pi/settings.json`, `.pi/mcp.json` |
+
+**Why this matters.** The freedom runs both ways: because Ymir is pi-native it can
+ship **pi packages** — bundling extensions, skills, prompt templates, and themes
+for others to `pi install` — and because it is Omarchy-native it can help an
+Omarchy user set up and tune the whole machine, not just the repo.
+
+On a non-Omarchy host the Omarchy steps are a clean `SKIP`; Ymir still runs. On a
+host without herdr, tmux carries the panes. On a harness that is not pi, the
+runtime adapts through the harness adapters (see `hamr`).
+
+### Omarchy-native
+
+Ymir treats the host desktop as part of itself. It **detects** Omarchy
+(`/usr/share/omarchy`), **reads** the real layout (`hyprctl monitors -j` — physical
+size *and* scale, because a 1920×1200 panel at scale 1.5 is a 1280×800 logical
+desktop, and mixing the two is the classic placement bug), and **lets Hyprland own
+placement** rather than fighting the compositor.
+
+- **Desktop placement.** On Omarchy the numbered **desktops** (`1 2 3 4 5 …`) are
+the operator's "screens". `bin/desktop-place.sh` gives each Ymir app its **own
+desktop, preferring an empty one**, via Omarchy's own rule idiom
+(`o.window({ class = "^ymir-hlidskjalf$" }, { workspace = "2" })`), and never
+edits `/usr/share/omarchy/`.
+- **It learns the machine.** `bin/omarchy-sense.sh` records a comparable snapshot
+(Omarchy version, explicit packages, config files, monitors, scale) and **diffs**
+it, so Ymir can advise on *this* setup. `bin/omarchy-hook-install.sh` installs a
+`post-update.d` hook, so **every `omarchy update` re-teaches it**.
+- **It survives the hardware.** On a small-VRAM iGPU the Wayland GPU process can
+die with `amdgpu: Not enough memory for command submission` (SIGSEGV, not an OOM);
+`YMIR_DESKTOP_DISABLE_GPU=1` runs the dashboards on software rendering.
+
+Full reference: the `ymir` skill. Omarchy's own skill is authoritative for
+Omarchy itself; ours adds the Ymir integration.
+
+### herdr-first (Þjazi)
+
+Every Eindri worker lives in a terminal pane, so the backend matters. Ymir prefers
+**herdr** and accepts **tmux** — and never degrades silently.
 
 ```
-Requirements: git · curl · node ≥ 18 (for the npm route) · bun/docker (the
-installer provisions what it can, and reports honestly what it cannot)
+backend_priority[3]{rank,backend,note}:
+  "1","herdr","preferred; protocol 14+ for panes, 0.8.0+ for presentation spaces"
+  "2","tmux","verified reference backend"
+  "3","none","spawn is refused with a plain reason"
 ```
 
-```
-YMIR_HOME     where the distro lives     (default ~/.ymir)
-YMIR_REPO     the distro git remote      (default https://github.com/zerwiz/ymir.git)
-YMIR_BRANCH   the branch to track        (default main)
-```
+`bin/herdr-ensure.sh` verifies the *version* (not just presence) and installs via
+the pinned, SHA-256-verified installer when herdr is absent. Selection order:
+`config/backend` → `BROKK_BACKEND` → `HERDR_ENV=1` → else tmux. Full reference:
+the `ymir` skill.
 
-Run it non-interactively, or just ask what it would do:
+### pi-native
+
+[pi](https://pi.dev) is the harness Ymir runs in, and Ymir uses that fully rather
+than treating it as a shell to be wrapped:
+
+- **Extensions** — `.pi/extensions/` carries live behaviour (the watcher arm, the
+turn-end guard, the Ró presentation preference, the agent-state surface).
+- **Packages** — `pi install npm:<pkg>` / `git:<repo>` bundles extensions, skills,
+prompt templates, and themes. Ymir can **ship its own**, so a Ymir capability can
+be distributed and installed like any pi package, not only as a shell script.
+- **Model providers** — pi resolves models from `~/.pi/agent/models.json`, whose
+shape is `{"providers": {...}}`. Local servers (LM Studio, Ollama, vLLM) and the
+Bifrost bridge are configured the same way, so the fleet runs on local or cloud
+models by the operator's choice.
+
+This is the freedom you gain from being pi-native: a new capability has three
+possible homes — a shell script, a skill, or a **pi package** — and the last one is
+installable by anyone running pi.
+
+---
+
+## System Map
+
+| Subsystem | Norse Name | Role |
+|---|---|---|
+| Platform root | **Ymir** | master daemon / host OS |
+| Primary agent | **Brokk** | the autonomous operator's hand |
+| Sub-agent workers | **Eindri** | isolated sandboxed workers |
+| Git worktrees | **Yggdrasil** | zero-collision parallel edits |
+| Docker sandbox | **Utgard** | ephemeral execution barrier |
+| Gateway | **Bifrost** | reverse proxy / HTTP routing |
+| Model bridge | **Bifrost bridge** | local OpenAI-compatible endpoint for the fleet |
+| OAuth guard | **Heimdall** | GitHub OAuth / JWT |
+| Tunnel | **Gjallarhorn** | Cloudflare outbound tunnel |
+| Dashboard | **Hlidskjalf** | observability & control plane |
+| File browser | **Skrymir** | web file explorer |
+| Workspaces | **workspace/** | personal & work scopes over domains |
+| Shared space | **Midgard** | shared assets & repos |
+| Message bus | **Ratatoskr** | A2A 1.0 backbone (cards, lifecycle, Redis) |
+| Vector memory | **Mimirsbrunn** | engram store + Kaia's bridge (`:4602`) |
+| Audit ledger | **Runes** | append-only system log |
+| Issue→PR | **Mjollnir** | autonomous fixes & PRs |
+| Process monitor | **Valhalla** | PM2/Docker supervision |
+| Skill synthesis | **Gungnir** | dynamic skill creation |
+| Session digest | **Sága** | the context injected at session open |
+| Watch / supervision | **Sýn** | watcher, guard, seat continuity |
+| Session lock | **Gleipnir** | one live session per home |
+| Scheduled jobs | **Nornir** | the fates who govern time |
+| Host desktop (Omarchy) | **Omarchy** | the machine Ymir runs on: monitors, scale, themes, hooks |
+| Terminal backend | **Þjazi** | agent panes — herdr (protocol 14+) or tmux |
+| Harness surface | **pi** | extensions, skills, prompt templates, packages |
+
+---
+
+## Skills
+
+Every reusable capability is a skill in [`.agents/skills/`](.agents/skills/), each
+named for the figure whose role matches the work (the Gungnir naming law). Galdr is
+the master builder; Tyr judges compliance.
+
+| Skill | Norse | Purpose |
+|---|---|---|
+| `galdr` | Galdr | agent-CLI ergonomics + master builder/maintainer of the runtime |
+| `tyr-check` | Tyr | the judge — validates tools/skills/docs against the 10 principles |
+| `smidja` | Smiðja | the smithy: roster + bounded phases + typed envelopes |
+| `hvild-afk` | Hvíld | away-mode supervision: routine wakes self-handled, escalations batched |
+| `saga` | Sága | session bearings: fleet digest (/bearings) + recap (/ahoy) |
+| `muninn-stow` | Muninn | session-knowledge curation, routing, and persistence |
+| `jord-projects` | Jörð | project registry + delivery posture |
+| `urdh` | Urðr | Allfather-hold lifecycle |
+| `frigg-consent` | Frigg | consent / ask-user authority gate |
+| `vor-diagnostics` | Vör | bootstrap + diagnostic reasoning |
+| `nornir` | Nornir | fate & schedule: events + quota |
+| `gjallarhorn-relay` | Gjallarhorn | public relay replies (X / Discord) |
+| `eindri-homes` | Eindri | isolated worker homes |
+| `syn-recovery` | Sýn | stuck-worker recovery playbook |
+| `ymir` | Ymir | operate the host: update · Omarchy · Þjazi |
+| `hamr` | Hamr | per-harness adapter reference (OpenCode, Pi, Claude, Cursor, Codex) |
+
+The Galdr family enforces the 10 ergonomic principles (TOON output, minimal schemas,
+self-correcting errors) and the runtime acceptance gates; run
+`bash .agents/skills/galdr-cli/scripts/compliance-check.sh` before claiming done.
+
+---
+
+## Agents
+
+The **Eindri** take a mythic name whose craft matches the job, and each runs in an
+Utgard sandbox on a Yggdrasil worktree.
+
+| Eindri | Figure | Craft | Speciality |
+|---|---|---|---|
+| **Sindri** | the smith | developer | code synthesis, refactoring, tests, CLIs |
+| **Bragi** | the skald | marketer | content, SEO, social, campaigns |
+| **Huginn** | the sage | researcher | RAG, web search, analysis |
+| **Mímir** | the wise | planner | architecture, sequencing, risk |
+| **Forseti** | the just | reviewer | review, QA, acceptance — changes nothing |
+| **Snotra** | the wise-woman | documenter | docs, write-ups, changelogs |
+| **Kvasir** | the knowing | scout | reconnaissance — changes nothing |
+
+Profiles live in [`.agents/agents/`](.agents/agents/) and are bound to each tool by
+`bin/valknut-load.sh` (OpenCode reads `.opencode/agent/`; Pi links resolve under
+`.pi/agents/`).
+
+---
+
+## The Runtime — taking the seat
+
+When a harness opens in the repo, **Sága** speaks before the first turn: the seat is
+bound by **Gleipnir**, the model bridge is raised, the **Nornir** jobs start, and
+the fleet context is injected (hidden, by design). Run-tier harnesses run the digest
+and inject it; nudge-tier harnesses are asked.
+
+| Harness | Session-start surface |
+|---|---|
+| **OpenCode** | `.opencode/plugins/{saga-sessionstart,syn-watch-arm,syn-turnend-guard}.js` |
+| **Pi** | `.pi/extensions/{syn-turnend-guard,gna-pi-watch,ro,skuld-branch-supervision}.ts` |
+| **Claude Code** | `.claude/settings.json` — `SessionStart` + `Stop` |
+| **Cursor** | `.cursor/hooks.json` — `sessionStart` + `stop` + `preToolUse` |
+| **Codex** | `.codex/hooks.json` — `SessionStart` + `PreToolUse` + `Stop` |
+
+- **Seat:** `bin/saga-session-start.sh` — the one ordered digest.
+- **Lock:** `bin/gleipnir-lock-lib.sh` — bound to the live session pid.
+- **Bridge:** `bin/bifrost-bridge.sh` — raises the local model endpoint.
+- **Jobs:** `bin/nornir-cron-start.sh` — daily briefing 07:00, observer, housekeeping, git sync.
+- **Watch:** `bin/syn-watch-arm.sh` + the harness adapter.
+
+Details: [`docs/session-start.md`](docs/session-start.md).
+
+---
+
+## The Control Plane — Hlidskjalf
+
+[`apps/hlidskjalf`](apps/hlidskjalf) is the dashboard. It runs **live** against a
+small local gate API that reads the runtime, or in **demo mode** on seeded data.
 
 ```bash
-npx @zerwiz/ymir --check     # report only — no writes, no prompt
-npx @zerwiz/ymir --yes       # non-interactive
+scripts/start.sh     # raises the gate API (:3889) + the SPA (:3888)
+scripts/stop.sh
 ```
 
-The installer is **idempotent**: run it again and it heals forward rather than
-duplicating. It asks before it writes and validates at the end.
-
-## It is early
-
-Ymir is in **alpha**. The forge is hot and the anvil works, but expect rough
-edges — and do not run it as a public service yet (auth hardens with Heimdall).
-
-## This package
-
-This npm package is only the **bootstrap** — `install.sh` plus a thin
-`ymir` bin. The system itself lives in the distro repo. This package carries no
-secrets and no private material.
-
-## Open source, with gratitude
-
-Ymir is **Apache-2.0**. It is a Norse shell over other people's excellent work —
-we did not build the engines, we built the hall around them, and we name them
-proudly: **treehouse · sandcastle · no-mistakes · pi · oh-my-pi · hermes-agent ·
-pi-desktop · A2A**, and the kunchenguid family (**firstmate · axi · lavish-axi**).
-
-Their licences are honoured in full in `NOTICE` and `THIRD-PARTY-LICENSES`.
+Views: Fleet · Tasks · Well · Runes · Reviews · Processes · Files · OmniChat ·
+Runtime · Cron · Forge · Profile. OmniChat speaks to **Kaia** for real (recall from
+the well, replies via the local model bridge). Press **Enter demo mode** on the sign-in
+screen to explore without the runtime.
 
 ---
 
-<p align="center"><em>Hammered steel, raw iron, and obsidian runes.
-Step up to the forge and carve your own worlds from Ymir's frame.</em></p>
+## Quick Start
+
+```bash
+git clone <this-repo> ~/Ymir && cd ~/Ymir
+cp .env.example .env.local          # fill in your keys (never committed)
+
+# 1) First setup — prints a plan, asks you to accept, then validates itself
+bin/ymir-install.sh                 # add --yes for non-interactive, or --check to preview
+
+# 2) The control plane (live data)
+scripts/start.sh                    # → http://127.0.0.1:3888/
+
+# 3) The agent seat (any supported harness)
+bin/saga-session-start.sh           # the digest (auto-runs on harness open)
+```
+
+The installer is idempotent and self-healing: it provisions what it can in user
+space (`bun`, `uv`, `mcp`, the Þjazi backend), installs the OSS engines, learns
+the machine, places the desktop apps, and — on an **Omarchy** host — sets the
+update hook that re-teaches it after every `omarchy update`. It ends by opening
+both desktop apps and running `bin/ymir-validate.sh` to prove what stands.
+
+### What each platform buys you
+
+The installer serves all three of Ymir's native homes on **every** run — a
+non-Omarchy host loses only the Omarchy-specific hook, never the logic.
+
+```
+platform_gifts[3]{platform,what_the_install_does,what_you_gain}:
+  "Omarchy","detects the host, reads hyprctl monitors+scale, writes o.window desktop rules, snapshots the setup, installs the post-update hook","your dashboards land on their own numbered desktops; Ymir knows THIS machine and relearns it when Omarchy moves"
+  "herdr (Þjazi)","bin/herdr-ensure.sh verifies the version against the floors and installs via the pinned, SHA-verified installer; tmux is the accepted reference","every Eindri worker gets a real pane in a real terminal; presentation spaces at 0.8.0+, panes at protocol 14+"
+  "pi","registers the harness surfaces, the MCP servers, and the model providers (local LM Studio / Ollama or the Bifrost bridge)","extensions, skills, prompt templates, themes, and pi PACKAGES are all live — a new Ymir capability can ship as an installable pi package"
+```
+
+A new capability therefore has three possible homes — a shell script, a skill, or
+a **pi package** — and on Omarchy it can also reach the desktop itself. That is the
+freedom of being native to all three rather than portable to none.
+
+Point a harness (OpenCode, Pi, Claude Code, Cursor, Codex) at the repo and it takes
+the seat as **Brokk**. Read [`AGENTS.md`](AGENTS.md) for the operating laws and
+[`docs/masterplan.md`](docs/masterplan.md) for the forge orders.
+
+---
+
+## Stack — Today vs Target
+
+| Layer | Today (agent-proficient) |
+|---|---|
+| Control plane & daemons | **TypeScript** (Node 22) / **Bun** |
+| Agent orchestration | **Python 3.12+** + TypeScript |
+| UI / UX | **React + Vite** (Hlidskjalf) |
+| Inter-agent | **A2A 1.0** (JSON-RPC 2.0 / SSE) + **Redis** |
+| Memory | **engram** — the Mimirsbrunn well |
+| Gateway / Auth / Tunnel | Traefik/Caddy · OAuth2-proxy · cloudflared |
+| Sandbox | Docker (rootless, network-none) |
+| Runtime backend | Pi / OpenCode harnesses; herdr/tmux panes |
+
+**Target (Ymir Rut v2.6 — re-forged later, never redesigned):** Rust (Edition 2024) +
+Tokio · NATS JetStream · gRPC/Protobuf · libgit2 · cgroups v2 / seccomp · PostgreSQL
+16 · MinIO/S3. See [`docs/ymir-rut.md`](docs/ymir-rut.md).
+
+---
+
+## Design Language
+
+**Carved, not skinned.** Cinzel (rune headings) · JetBrains Mono (code & telemetry) ·
+Inter (body). Canvas: obsidian slate; accents: electric cyan for Bifrost, violet for
+the realms. Emblem: the Algiz rune over a blacksmith's anvil. Tokens are the single
+source of truth in [`midgard/design-system/tokens.css`](midgard/design-system/tokens.css);
+full spec in [`docs/design.md`](docs/design.md).
+
+---
+
+## Folder Structure
+
+> **Single tenant.** One operator (the Allfather), many **workspaces**
+> (personal · work) over knowledge **domains** (company · marketing ·
+> development · life · me). Houses (Ymir Labs, Brokk Forge, …) are brands, not
+> isolation. OSS engines under Norse shells: **treehouse** → Yggdrasil
+> (worktrees), **sandcastle** → Utgard (sandboxes), **no-mistakes** →
+> Mjollnir/Glitnir (clean-PR gate).
+
+```
+ymir/
+├── AGENTS.md                  # the always-loaded contract (Brokk)
+├── bin/                       # Norse runtime: saga, syn, rodd, gleipnir, nornir, einherjar,
+│                              #   yggdrasil (treehouse), utgard (sandcastle), mimir-bridge,
+│                              #   ymir-install, workspace-provision, project-git, mjollnir,
+│                              #   hermes-ensure (provision the Hermes worker runtime)
+├── .agents/
+│   ├── agents/                # Brokk + the Eindri profiles (and Galdr)
+│   ├── skills/                # Gungnir skills (galdr, tyr-check, hvild-afk, …)
+│   ├── backend/               # vendored fleet backend
+│   ├── config/                # ro, cron.yaml, eindri-dispatch, eindri-harness
+│   ├── memory/               # Mimirsbrunn well — kaia.engram + episodes.jsonl
+│   ├── sandbox/               # Utgard barrier (Dockerfile.utgard, utgard.config.json)
+│   └── bus/                   # Ratatoskr (A2A) protocol
+├── .pi/extensions/  .pi/mcp.json   # Pi adapters (Sýn, Gná, Ró, Skuld) + engram MCP
+├── .opencode/plugins/         # OpenCode adapters (Sága, Sýn, Rödd)
+├── apps/hlidskjalf/           # the control plane (React + Vite + Bun gate API)
+├── midgard/                   # shared assets, design tokens, icons
+├── svartalfaheim/             # company container root (zerwiz) — future multi-user
+├── workspace/                 # THE SINGLE TENANT: work/ · personal/ · companies/ ·
+│                              #   workspaces.yaml · projects.yaml · memory/ · INSTALL.md
+├── smidja/                    # the smithy engine + smidja.db (runs, stats, trace)
+├── state/                     # runtime state: lock, chat/, bridges, cron
+├── scripts/start.sh stop.sh   # raise/lower the whole system
+├── assets/                    # art, the OS diagram, reference material
+└── docs/                      # lore, architecture, masterplan, plans, session-start
+```
+
+---
+
+## Key combinations
+
+Every key Ymir binds. On Omarchy they live in
+`~/.config/hypr/ymir-launchers.lua` (generated by `bin/desktop-place.sh apply`)
+and are required from `hyprland.lua`. See what is live with
+`omarchy menu keybindings --print`.
+
+| Key | What it does | Declared by |
+|---|---|---|
+| **SUPER + Y** | raise **Hlidskjalf** — the control plane | `bin/desktop-place.sh` → `~/.config/hypr/ymir-launchers.lua` |
+| **SUPER + M** | raise **Smiðja** — the visualizer | same file |
+| **ctrl + shift + e** | open the **file picker** over the working directory | `.pi/extensions/open-editor.ts` |
+
+Each app window opens on **its own numbered desktop** (the placement rules in
+`bin/desktop-place.sh` send it there), so a speed-start both raises the app and
+keeps it off the desktop you are working on. `/edit [path]` is the same editor
+surface as a slash command, with tab-completion over the directory.
+
+Each app also offers the same speed-start **in its own UI** (`POST /api/desktop`),
+so the keyboard is a convenience for the operator's hands, not the only way in.
+
+> The editor is the Allfather's own surface: it registers no LLM tool, because
+> agents already have `read` and `edit`. Name it when he would reach for it;
+> never try to drive it.
+
+---
+
+## Inviting someone else in
+
+Ymir is single-operator by design: one person directs the fleet. Someone else can
+try yours without being handed your account. The installer mints an **invite
+code** and prints it at the end of the run:
+
+```bash
+bin/ymir-invite.sh mint --limit 3   # a code that admits 3 accounts
+bin/ymir-invite.sh list             # every code, what is spent, who is in
+bin/ymir-invite.sh revoke CODE      # take one back, now
+```
+
+They open the gate and choose **“I have an invite code”**, then pick their own
+username and password. Registration stays **closed** unless a live code exists,
+and each code stops admitting accounts once its ceiling is spent — so an instance
+is never accidentally open, and a link that leaks is not a door.
+
+Accounts live in `~/.config/ymir/accounts.json` (mode `0600`) as argon2id
+hashes; no plaintext password is ever written, and nothing about them enters the
+repo. Your own credentials stay `HLIDSKJALF_AUTH` in `.env.local`.
+
+---
+
+## Desktop & Mobile
+
+- **Desktop (Electron).** `scripts/electron.sh start` (or `npm run desktop` in
+  `apps/hlidskjalf`) opens Hlidskjalf + Smiðja as a native window — app icon and
+  a stable “Ymir · Hlidskjalf” title. It raises the stack if it is down.
+
+- **Android APK (Capacitor).** A thin native shell over the Hlidskjalf web app —
+  one codebase, pointed at your tunnel.
+
+  ```sh
+  cd apps/hlidskjalf
+  npm install
+  npm run build
+  npx cap sync android
+  cd android
+  JAVA_HOME=<jdk-17> ANDROID_HOME=<android-sdk> ./gradlew assembleDebug
+  # → android/app/build/outputs/apk/debug/app-debug.apk
+  ```
+
+  Change the server later **without touching code**:
+
+  ```sh
+  YMIR_SERVER_URL=https://your.server npx cap sync android
+  ```
+
+  Default target is `https://<your-host>` (`capacitor.config.ts`).
+
+- **PWA.** Open the tunnel URL on a phone and “Add to Home Screen” — the manifest
+  ships in `apps/hlidskjalf/public/manifest.webmanifest`.
+
+---
+
+## Naming Law
+
+Every subsystem, component, and process is named for the figure whose role matches
+its work; the operator is the **Allfather** (Odin). The house voice is Norse-natural;
+flavor may season a line, but an imported term never names a subsystem. The full
+component map lives in
+[`.agents/skills/galdr-cli/assets/norse-naming.md`](.agents/skills/galdr-cli/assets/norse-naming.md).
+
+---
+
+## Docs
+
+- [`docs/lore.md`](docs/lore.md) — the mythos, realm by realm
+- [`docs/session-start.md`](docs/session-start.md) — how the seat is taken
+- [`docs/Architecture.md`](docs/Architecture.md) — the 7 realms, A2A, memory, migration
+- [`docs/masterplan.md`](docs/masterplan.md) — the append-only forge orders
+- [`docs/plans/README.md`](docs/plans/README.md) — the feature plan index
+- [`docs/design.md`](docs/design.md) — the design system
+- [`docs/ymir-rut.md`](docs/ymir-rut.md) — the Rust re-forging spec
+- [`AGENTS.md`](AGENTS.md) — Brokk's always-loaded operating contract
+
+---
+
+> *“A webhook hits Bifrost and is queued on Ratatoskr. Ymir allocates resources and
+> launches Brokk. Brokk drinks from Mimirsbrunn, cuts a branch via Yggdrasil inside
+> Svartalfaheim, and hands execution to an Eindri inside Utgard. Tests pass, Mjollnir
+> raises the PR, the outcome is observed back into the well, Runes carves the entry,
+> and Hlidskjalf renders the state.”*
+
+*The bellows feed the flame; the smith reads the metal; the well remembers every blow.*
+
+## What was wrought — 2026-09-14
+
+One day, one loom. Everything below lives in this main and in the world:
+
+- **The cloth** — Hlidskjalf, Smiðja and Sessrúmnir wear one carved look (stone,
+  bronze, bone, blood; Cormorant · Newsreader · IBM Plex Mono); Smiðja's default
+  theme is **Fensalir**; text highlighting is carved amber — the blue is dead.
+- **Óðrerir, the Live Hall** — the landing's live board: a dealt slate pile, a
+  carved ledger (underway · landed · charted), and a planning glass fed by real
+  machine state. See it at the landing repo: `zerwiz/ymir-homepage` (local:
+  `:4321`), with the `To the Hall` rune in every app's chrome.
+- **The wake bridge** — every smith's finish files a saga and wakes the
+  primary; the echo-guard keeps the wire honest.
+- **The mark** — recoloured into the cloth, and the anvil-bars bug found and
+  fixed (the metal was always there; now it is seen).
+
+The lore runs to **XXXI — The Weaving of the Halls**; the masterplan carries
+the full day's ledger.
+
+---
+
+## With gratitude — the people we stand on
+
+Ymir is a Norse shell over other people's excellent work. We did not build the
+engines; we built the hall around them. Every project below is theirs, kept under
+their own licence, and we are glad to name them. Go and look at what they made —
+follow them, star them, learn from them.
+
+| Project | Who made it | Licence | What it powers in Ymir |
+|---|---|---|---|
+| [treehouse](https://github.com/kunchenguid/treehouse) | kunchenguid | MIT | Yggdrasil — git worktrees |
+| [sandcastle](https://github.com/mattpocock/sandcastle) | [Matt Pocock](https://www.youtube.com/@mattpocockuk) | MIT | Utgard — sealed sandboxes |
+| [no-mistakes](https://github.com/kunchenguid/no-mistakes) | kunchenguid | MIT | the clean-PR gate |
+| [pi](https://github.com/earendil-works/pi) | Earendil Works | MIT | the coding harness |
+| [oh-my-pi](https://github.com/can1357/oh-my-pi) | can1357 | MIT | prior art for the pi surface |
+| [hermes-agent](https://github.com/NousResearch/hermes-agent) | Nous Research | MIT | the Hermes worker runtime |
+| [pi-desktop](https://github.com/FaqFirebase/pi-desktop) | FaqFirebase and the Pi Desktop contributors | Apache-2.0 | Sessrúmnir (our re-themed fork) |
+| [A2A protocol](https://github.com/a2aproject/a2a) | the A2A project | Apache-2.0 | the agent-to-agent backbone |
+| [firstmate](https://github.com/kunchenguid/firstmate) | kunchenguid | MIT | the fleet |
+| [axi](https://github.com/kunchenguid/axi) | kunchenguid | MIT | agent-ergonomics principles |
+| [lavish-axi](https://github.com/kunchenguid/lavish-axi) | kunchenguid | MIT | the HTML-artifact editor |
+
+Their full licence texts are bundled in [THIRD-PARTY-LICENSES](THIRD-PARTY-LICENSES),
+and the audit of every demand is in [docs/third-party-audit.md](docs/third-party-audit.md).
+If we have benefited from your work and missed you here, tell us — we will fix it,
+loudly.
+
+Thank you all. The forge is hot because you lit it.
+
+_Where a maker teaches on YouTube we link the channel — Matt Pocock's is
+[youtube.com/@mattpocockuk](https://www.youtube.com/@mattpocockuk). If you make a
+tutorial for a project we use, tell us and we will link yours too._

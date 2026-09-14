@@ -1,7 +1,7 @@
 {
   "name": "@zerwiz/ymir",
-  "version": "0.1.0",
-  "description": "Ymir \u2014 the official local installer (curl | bash, or npx ymir)",
+  "version": "0.1.1",
+  "description": "Ymir — the official local installer (curl | bash, or npx ymir)",
   "type": "module",
   "bin": {
     "ymir": "bin/ymir.js"
